@@ -6,6 +6,8 @@ export type { ChannelName } from "./channel-meta";
 export interface CompositeChannel {
   name: ChannelName;
   source: CorpusSource;
+  /** Whether `auto` mode should consider this channel. Defaults to true. */
+  auto?: boolean;
 }
 
 export interface CompositeCorpusOptions {
@@ -54,6 +56,7 @@ export function createCompositeCorpus(opts: CompositeCorpusOptions): CorpusSourc
       const active = opts.activeChannel();
       if (active === "auto") {
         for (const ch of opts.channels) {
+          if (ch.auto === false) continue;
           const hit = ch.source.pick(ctx);
           if (hit !== null) return hit;
         }

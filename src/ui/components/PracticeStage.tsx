@@ -1,5 +1,6 @@
 import type { Accessor, JSX } from "solid-js";
 import { createSignal, Show } from "solid-js";
+import type { CorpusEntry } from "../../engine/corpus";
 import type { SessionSnapshot } from "../../engine/session";
 import type { ChannelName } from "../../io";
 import { CHANNELS, KEY_SOUND_PACKS } from "../../io";
@@ -37,6 +38,12 @@ const SOURCE_OPTIONS: ReadonlyArray<{ value: ChannelName; label: string }> = CHA
 
 export interface PracticeStageProps {
   snap: SessionSnapshot;
+  /**
+   * The corpus entry the current passage was sourced from, or `null`
+   * for engine-generated / custom-text runs. Only consumed for its
+   * optional `display` annotation (pinyin → Chinese ruby overlay).
+   */
+  entry: CorpusEntry | null;
   /** Which physical layout to render on the on-screen keyboard. */
   keyboardLayout: KeyboardLayoutName;
   /** Active character keymap — `qwerty` / `colemak` / `dvorak`. Purely visual. */
@@ -115,7 +122,18 @@ export function PracticeStage(props: PracticeStageProps): JSX.Element {
           }
         }}
       />
-      <TypingArea typing={props.snap.typing} showWhitespace={props.showWhitespace} />
+      <TypingArea
+        typing={props.snap.typing}
+        showWhitespace={props.showWhitespace}
+        display={
+          // Guard against a stale entry from the previous run: ruby
+          // groups index into the entry's text, so the snapshot must
+          // be on that same text or the indices misalign.
+          props.entry?.display && props.entry.text === props.snap.typing.expected
+            ? props.entry.display
+            : undefined
+        }
+      />
 
       <Show when={props.snap.remainingSec !== null}>
         <output class="countdown" aria-label="time remaining">

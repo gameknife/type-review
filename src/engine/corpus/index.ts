@@ -9,6 +9,7 @@ export type {
   CorpusEntry,
   CorpusSource,
   CorpusSourceContext,
+  RubyGroup,
   SourceKind,
 } from "./sources";
 export {

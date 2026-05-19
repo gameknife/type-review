@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "_doc": "Kid-friendly Chinese sentences for pinyin typing practice. Each entry pairs an array of characters (the Chinese sentence) with the matching pinyin syllables (lowercase, no tone marks — these are what the kid types). The optional `toned` array carries the same syllables with tone marks (wǒ, ài, mā, ma — display-only, helps the kid learn tones while only typing letters). All arrays MUST be the same length; one cell may hold either a single hanzi (e.g. \"猫\") or a contiguous group that shares one pinyin reading. Punctuation can be carried in the characters array as a standalone cell with the empty string \"\" as its pinyin — it renders as-is but contributes no keystrokes. Sample seed; expand by appending to entries[].",
+  "entries": [
+    { "id": "py-wo-ai-mama", "characters": ["我", "爱", "妈", "妈"], "pinyin": ["wo", "ai", "ma", "ma"], "toned": ["wǒ", "ài", "mā", "ma"], "license": "public domain" },
+    { "id": "py-wo-ai-baba", "characters": ["我", "爱", "爸", "爸"], "pinyin": ["wo", "ai", "ba", "ba"], "toned": ["wǒ", "ài", "bà", "ba"], "license": "public domain" },
+    { "id": "py-xiao-mao", "characters": ["小", "猫", "在", "睡", "觉"], "pinyin": ["xiao", "mao", "zai", "shui", "jiao"], "toned": ["xiǎo", "māo", "zài", "shuì", "jiào"], "license": "public domain" },
+    { "id": "py-xiao-gou", "characters": ["小", "狗", "在", "跑", "步"], "pinyin": ["xiao", "gou", "zai", "pao", "bu"], "toned": ["xiǎo", "gǒu", "zài", "pǎo", "bù"], "license": "public domain" },
+    { "id": "py-tian-qi-hao", "characters": ["今", "天", "天", "气", "真", "好"], "pinyin": ["jin", "tian", "tian", "qi", "zhen", "hao"], "toned": ["jīn", "tiān", "tiān", "qì", "zhēn", "hǎo"], "license": "public domain" },
+    { "id": "py-tai-yang", "characters": ["太", "阳", "出", "来", "了"], "pinyin": ["tai", "yang", "chu", "lai", "le"], "toned": ["tài", "yáng", "chū", "lái", "le"], "license": "public domain" },
+    { "id": "py-yue-liang", "characters": ["月", "亮", "在", "天", "上"], "pinyin": ["yue", "liang", "zai", "tian", "shang"], "toned": ["yuè", "liàng", "zài", "tiān", "shàng"], "license": "public domain" },
+    { "id": "py-xing-xing", "characters": ["星", "星", "一", "闪", "一", "闪"], "pinyin": ["xing", "xing", "yi", "shan", "yi", "shan"], "toned": ["xīng", "xīng", "yī", "shǎn", "yī", "shǎn"], "license": "public domain" },
+    { "id": "py-xiao-niao", "characters": ["小", "鸟", "在", "唱", "歌"], "pinyin": ["xiao", "niao", "zai", "chang", "ge"], "toned": ["xiǎo", "niǎo", "zài", "chàng", "gē"], "license": "public domain" },
+    { "id": "py-hua-er-hong", "characters": ["花", "儿", "红", "了"], "pinyin": ["hua", "er", "hong", "le"], "toned": ["huā", "ér", "hóng", "le"], "license": "public domain" },
+    { "id": "py-cao-er-lv", "characters": ["草", "儿", "绿", "了"], "pinyin": ["cao", "er", "lv", "le"], "toned": ["cǎo", "ér", "lǜ", "le"], "license": "public domain" },
+    { "id": "py-wo-shi-xue-sheng", "characters": ["我", "是", "一", "个", "学", "生"], "pinyin": ["wo", "shi", "yi", "ge", "xue", "sheng"], "toned": ["wǒ", "shì", "yī", "ge", "xué", "shēng"], "license": "public domain" },
+    { "id": "py-wo-ai-xue-xi", "characters": ["我", "爱", "学", "习", "汉", "字"], "pinyin": ["wo", "ai", "xue", "xi", "han", "zi"], "toned": ["wǒ", "ài", "xué", "xí", "hàn", "zì"], "license": "public domain" },
+    { "id": "py-da-jia-hao", "characters": ["大", "家", "好"], "pinyin": ["da", "jia", "hao"], "toned": ["dà", "jiā", "hǎo"], "license": "public domain" },
+    { "id": "py-ni-hao-ma", "characters": ["你", "好", "吗"], "pinyin": ["ni", "hao", "ma"], "toned": ["nǐ", "hǎo", "ma"], "license": "public domain" },
+    { "id": "py-chi-pingguo", "characters": ["我", "要", "吃", "苹", "果"], "pinyin": ["wo", "yao", "chi", "ping", "guo"], "toned": ["wǒ", "yào", "chī", "píng", "guǒ"], "license": "public domain" },
+    { "id": "py-he-shui", "characters": ["我", "要", "喝", "水"], "pinyin": ["wo", "yao", "he", "shui"], "toned": ["wǒ", "yào", "hē", "shuǐ"], "license": "public domain" },
+    { "id": "py-shang-xue", "characters": ["我", "去", "上", "学"], "pinyin": ["wo", "qu", "shang", "xue"], "toned": ["wǒ", "qù", "shàng", "xué"], "license": "public domain" },
+    { "id": "py-hui-jia", "characters": ["我", "回", "家", "了"], "pinyin": ["wo", "hui", "jia", "le"], "toned": ["wǒ", "huí", "jiā", "le"], "license": "public domain" },
+    { "id": "py-wan-an", "characters": ["晚", "安", "做", "个", "好", "梦"], "pinyin": ["wan", "an", "zuo", "ge", "hao", "meng"], "toned": ["wǎn", "ān", "zuò", "ge", "hǎo", "mèng"], "license": "public domain" }
+  ]
+}

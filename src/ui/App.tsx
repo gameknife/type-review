@@ -5,6 +5,7 @@ import type { ProfileSettings, Session } from "../engine/session";
 import type { ProfileStore } from "../io";
 import {
   bundledCode,
+  bundledPinyin,
   bundledQuotes,
   createCompositeCorpus,
   createCorpusSessionAdapter,
@@ -105,6 +106,11 @@ export function App(props: AppProps = {}): JSX.Element {
       { name: "code", source: bundledCode },
       { name: "difficult", source: createDifficultSource(Math.random) },
       { name: "drills", source: createDrillsSource(Math.random) },
+      // `pinyin` is explicit-only (kid-mode Chinese sentences typed via
+      // pinyin). Keep it out of `auto` entirely so an English default
+      // run cannot start surfacing Chinese passages through channel
+      // ordering drift.
+      { name: "pinyin", source: bundledPinyin, auto: false },
     ],
     activeChannel: () => corpusChannel.channel(),
   });
@@ -315,6 +321,7 @@ export function App(props: AppProps = {}): JSX.Element {
           <Show when={is("practice")}>
             <PracticeStage
               snap={snap()}
+              entry={currentEntry()}
               keyboardLayout={keyboardLayout.layout()}
               keymap={keymap.keymap()}
               keySoundPack={keySounds.packName()}

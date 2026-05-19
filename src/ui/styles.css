@@ -385,7 +385,52 @@ kbd {
   56%, 100% { opacity: 0; }
 }
 
-
+/* ---- ruby overlay (pinyin → 汉字) --------------------------
+ * Activates when the current passage carries a `display` annotation
+ * (currently: the `pinyin` corpus channel). The typing surface stays
+ * the ground truth — every `.char` inside `.ruby-group__pinyin` is the
+ * same span as before — but each pinyin slice is wrapped in a flex
+ * column with the Chinese glyph stacked above it. Plain segments (the
+ * spaces between syllables) render as normal `.char` spans inline, so
+ * the typist still sees and types the separator space.
+ *
+ * `display: inline-flex` on the ruby group keeps each glyph+pinyin
+ * unit on a single baseline so a long sentence wraps at group
+ * boundaries rather than splitting a syllable across two lines. */
+.typing-area--ruby {
+  /* `pre-line` collapses spaces, which inside an inline-flex chain
+   * would suppress the rendered " " between groups. Switch to
+   * `pre-wrap` so explicit spaces survive and the browser still wraps
+   * at the spaces between ruby groups. */
+  white-space: pre-wrap;
+  /* Loosen the line gap a touch so the hanzi row above and the
+   * tone-mark overlay (which extends slightly above the letters'
+   * cap-height) have headroom on a wrapped line. */
+  line-height: calc(var(--lh-loose) * 1.2);
+}
+.ruby-group {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  vertical-align: baseline;
+  /* Keep a syllable from breaking mid-pinyin on narrow viewports. */
+  white-space: nowrap;
+}
+.ruby-group__display {
+  font-family: var(--font-sans, var(--font-mono));
+  font-size: 0.85em;
+  line-height: 1;
+  color: var(--color-text);
+  margin-bottom: 0.1em;
+  user-select: none;
+  pointer-events: none;
+}
+.ruby-group__pinyin {
+  display: inline-flex;
+}
+.ruby-group__pinyin--empty {
+  min-height: 1em;
+}
 
 /* ---- on-screen keyboard (full ANSI) ------------------------ */
 /* Ported from the design drop. One CSS variable --u sets the whole
@@ -2033,4 +2078,3 @@ kbd {
   color: var(--color-muted);
   margin-top: var(--space-2);
 }
-

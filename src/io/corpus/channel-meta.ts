@@ -33,6 +33,7 @@ export const CHANNELS = [
   { name: "user", label: "mine", idPrefix: "u-" },
   { name: "difficult", label: "difficult", idPrefix: "difficult:" },
   { name: "drills", label: "drills", idPrefix: "pseudo:" },
+  { name: "pinyin", label: "pinyin (中文)", idPrefix: "py-" },
 ] as const satisfies ReadonlyArray<ChannelMeta>;
 
 export type ChannelName = (typeof CHANNELS)[number]["name"];

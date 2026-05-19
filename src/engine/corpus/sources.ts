@@ -8,7 +8,42 @@
  * for each kind live in `io/corpus/`.
  */
 
-export type SourceKind = "drills" | "difficult" | "quote" | "code" | "user";
+export type SourceKind = "drills" | "difficult" | "quote" | "code" | "user" | "pinyin";
+
+/**
+ * Optional ruby-style display annotation for an entry. Used by the pinyin
+ * source so the UI can render Chinese characters above the (typed) pinyin
+ * groups without the engine ever seeing non-Latin input. Each
+ * `RubyGroup` covers one contiguous slice of `text` — `start` is the
+ * inclusive index, `text.slice(start, start + pinyin.length)` is what
+ * the typist actually presses, and `display` is what's shown above the
+ * group. Spaces between groups (and any other chars not covered) render
+ * normally below the row.
+ *
+ * Engine-pure: the display annotation never feeds back into stats,
+ * histograms, or the adaptive planner — it's pure UI metadata that
+ * passes through `CorpusEntry → Passage → currentEntry → TypingArea`.
+ */
+export interface RubyGroup {
+  /** Index into the entry's `text` where this group begins. */
+  start: number;
+  /**
+   * The pinyin syllable (or word) the user types. Non-empty values must
+   * be a slice of `text` at `start`; the empty string denotes a
+   * display-only cell (for punctuation, etc.) at that cursor boundary.
+   */
+  pinyin: string;
+  /** The glyph(s) shown above the group — typically one Chinese character, may be multi-codepoint. */
+  display: string;
+  /**
+   * Optional decorative variant of the pinyin shown above the typed row
+   * — typically the same syllable with tone marks (e.g. "wǒ" for the
+   * typed "wo"). Pure display: the user still types only `pinyin`. When
+   * absent, the UI just shows `display` (hanzi) above the typed letters
+   * with no middle row.
+   */
+  toned?: string;
+}
 
 export interface CorpusAttribution {
   author?: string;
@@ -39,6 +74,12 @@ export interface CorpusEntry {
   /** Required for `quote` / `user`; omitted for the generator-backed
    * sources (`drills`, `difficult`). */
   attribution?: CorpusAttribution;
+  /**
+   * Ruby-style display groups (e.g. Chinese-on-top-of-pinyin). Present
+   * only for sources that opt in (`pinyin`). The UI is the sole
+   * consumer; the engine treats `text` as the ground truth as always.
+   */
+  display?: readonly RubyGroup[];
 }
 
 export interface CorpusSourceContext {
@@ -141,13 +182,15 @@ export function pickWeightedByLength(
 
 /**
  * Build a `CorpusEntry` from the raw fields. Pre-computes `alphabet` so
- * subsequent `fitsAlphabet` checks stay fast.
+ * subsequent `fitsAlphabet` checks stay fast. `display` is an optional
+ * passthrough for ruby-style overlays (currently the pinyin source).
  */
 export function makeEntry(
   id: string,
   kind: SourceKind,
   text: string,
   attribution?: CorpusAttribution,
+  display?: readonly RubyGroup[],
 ): CorpusEntry {
   return {
     id,
@@ -156,5 +199,6 @@ export function makeEntry(
     alphabet: alphabetOf(text),
     length: text.length,
     ...(attribution ? { attribution } : {}),
+    ...(display ? { display } : {}),
   };
 }

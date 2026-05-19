@@ -39,6 +39,19 @@ describe("createCompositeCorpus", () => {
     expect(composite.pick(ctx())?.id).toBe("q1");
   });
 
+  it("auto: skips channels marked explicit-only", () => {
+    const pinyin = makeEntry("py-1", "pinyin", "ni hao");
+    const quote = makeEntry("q1", "quote", "quote passage");
+    const composite = createCompositeCorpus({
+      channels: [
+        { name: "pinyin", source: fixedSource(pinyin), auto: false },
+        { name: "quote", source: fixedSource(quote) },
+      ],
+      activeChannel: () => "auto",
+    });
+    expect(composite.pick(ctx())?.id).toBe("q1");
+  });
+
   it("auto: returns null if every channel does", () => {
     const composite = createCompositeCorpus({
       channels: [

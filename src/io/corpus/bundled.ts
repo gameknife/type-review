@@ -10,16 +10,23 @@
 
 import type { CorpusSource } from "../../engine/corpus";
 import { createCodeSource, type RawCode } from "./code";
+import { createPinyinSource, type RawPinyin } from "./pinyin";
 import { createQuotesSource, type RawQuote } from "./quotes";
 
 interface QuotesFile {
   entries: RawQuote[];
 }
 
+interface PinyinFile {
+  entries: RawPinyin[];
+}
+
+import pinyinJson from "./data/pinyin.json";
 // Top-level static import — Vite inlines the JSON into the bundle.
 import quotesJson from "./data/quotes.json";
 
 const quotesData = quotesJson as QuotesFile;
+const pinyinData = pinyinJson as PinyinFile;
 
 const codeModules = import.meta.glob<{ default: RawCode }>("./data/code/*.json", {
   eager: true,
@@ -28,3 +35,4 @@ const codeData: RawCode[] = Object.values(codeModules).map((m) => m.default);
 
 export const bundledQuotes: CorpusSource = createQuotesSource(quotesData.entries);
 export const bundledCode: CorpusSource = createCodeSource(codeData);
+export const bundledPinyin: CorpusSource = createPinyinSource(pinyinData.entries);
