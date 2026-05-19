@@ -43,15 +43,21 @@ const SW_CLEANUP_MARKER = "type-review:sw-cleanup-done";
 // reads and writes in try/catch so the gate degrades to "run cleanup
 // every load" instead of crashing the app on its first paint.
 function cleanupAlreadyDone(): boolean {
+  if (typeof localStorage === "undefined" || typeof localStorage.getItem !== "function") {
+    return false;
+  }
   try {
-    return typeof localStorage !== "undefined" && localStorage.getItem(SW_CLEANUP_MARKER) !== null;
+    return localStorage.getItem(SW_CLEANUP_MARKER) !== null;
   } catch {
     return false;
   }
 }
 function markCleanupDone(): void {
+  if (typeof localStorage === "undefined" || typeof localStorage.setItem !== "function") {
+    return;
+  }
   try {
-    if (typeof localStorage !== "undefined") localStorage.setItem(SW_CLEANUP_MARKER, "1");
+    localStorage.setItem(SW_CLEANUP_MARKER, "1");
   } catch {
     // Best-effort: ignore.
   }

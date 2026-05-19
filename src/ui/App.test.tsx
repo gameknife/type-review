@@ -3,6 +3,7 @@ import { render } from "solid-js/web";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { Profile } from "../engine/session";
 import type { LoadResult, ProfileStore } from "../io";
+import { createMemoryStorage } from "../test/memory-storage";
 import { App } from "./App";
 
 /** A store whose load() rejects — simulates a corrupt or unavailable backend. */
@@ -62,6 +63,7 @@ describe("App integration", () => {
     // The typing-flow tests want the practice route active on mount.
     // Practice is also the new default route, so this is just being explicit.
     window.location.hash = "#/practice";
+    vi.stubGlobal("localStorage", createMemoryStorage());
   });
 
   afterEach(() => {
@@ -69,6 +71,7 @@ describe("App integration", () => {
     dispose = () => {};
     document.body.innerHTML = "";
     window.location.hash = "";
+    vi.unstubAllGlobals();
   });
 
   async function mountApp(): Promise<HTMLElement> {

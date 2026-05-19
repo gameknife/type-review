@@ -13,6 +13,9 @@ const VALID_THEMES: readonly Theme[] = ["dark", "light", "sepia", "high-contrast
  * buggy writer get an arbitrary string into `dataset.theme` later.
  */
 function loadTheme(): Theme {
+  if (typeof localStorage === "undefined" || typeof localStorage.getItem !== "function") {
+    return defaultFromOs();
+  }
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw !== null && (VALID_THEMES as readonly string[]).includes(raw)) {
@@ -55,6 +58,9 @@ export function createTheme(): ThemeController {
   const apply = (next: Theme): void => {
     set(next);
     document.documentElement.dataset.theme = next;
+    if (typeof localStorage === "undefined" || typeof localStorage.setItem !== "function") {
+      return;
+    }
     try {
       localStorage.setItem(STORAGE_KEY, next);
     } catch (err) {

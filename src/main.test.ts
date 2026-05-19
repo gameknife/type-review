@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { createMemoryStorage } from "./test/memory-storage";
 
 /**
  * Regression test for the PWA-cleanup IIFE in main.tsx.
@@ -21,6 +22,7 @@ describe("main.tsx PWA cleanup", () => {
   beforeEach(() => {
     unregisterCalls = 0;
     deletedCacheNames = [];
+    vi.stubGlobal("localStorage", createMemoryStorage());
 
     // Fake a couple of leftover SW registrations and caches.
     const fakeReg = {

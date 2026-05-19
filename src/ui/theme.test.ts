@@ -1,6 +1,9 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { createMemoryStorage } from "../test/memory-storage";
 import { createTheme } from "./theme";
+
+vi.stubGlobal("localStorage", createMemoryStorage());
 
 afterEach(() => {
   localStorage.clear();
@@ -38,7 +41,7 @@ describe("createTheme", () => {
   it("gracefully tolerates a localStorage write failure (private mode)", () => {
     const theme = createTheme();
     const debug = vi.spyOn(console, "debug").mockImplementation(() => {});
-    vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
+    vi.spyOn(localStorage, "setItem").mockImplementation(() => {
       throw new DOMException("QuotaExceededError");
     });
     expect(() => theme.setTheme("light")).not.toThrow();
@@ -48,7 +51,7 @@ describe("createTheme", () => {
 
   it("gracefully tolerates a localStorage read failure", () => {
     const debug = vi.spyOn(console, "debug").mockImplementation(() => {});
-    vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
+    vi.spyOn(localStorage, "getItem").mockImplementation(() => {
       throw new DOMException("SecurityError");
     });
     const theme = createTheme();
