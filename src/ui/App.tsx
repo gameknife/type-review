@@ -5,8 +5,8 @@ import type { ProfileSettings, Session } from "../engine/session";
 import type { ProfileStore } from "../io";
 import {
   bundledCode,
-  bundledPinyin,
   bundledQuotes,
+  createBundledPinyin,
   createCompositeCorpus,
   createCorpusSessionAdapter,
   createDifficultSource,
@@ -34,6 +34,7 @@ import { createCrossTab } from "./hooks/use-cross-tab";
 import { createKeySounds } from "./hooks/use-key-sounds";
 import { createKeyboardLayout } from "./hooks/use-keyboard-layout";
 import { createKeymap } from "./hooks/use-keymap";
+import { createPinyinGrade } from "./hooks/use-pinyin-grade";
 import { createPressedKeys } from "./hooks/use-pressed-keys";
 import { createSessionBootstrap } from "./hooks/use-session-bootstrap";
 import { createSessionHandlers } from "./hooks/use-session-handlers";
@@ -99,6 +100,7 @@ export function App(props: AppProps = {}): JSX.Element {
   // in auto mode.
   const userCorpus = createUserCorpus();
   const corpusChannel = createCorpusChannel();
+  const pinyinGrade = createPinyinGrade();
   const corpus = createCompositeCorpus({
     channels: [
       { name: "user", source: createUserSource(() => userCorpus.passages()) },
@@ -109,8 +111,14 @@ export function App(props: AppProps = {}): JSX.Element {
       // `pinyin` is explicit-only (kid-mode Chinese sentences typed via
       // pinyin). Keep it out of `auto` entirely so an English default
       // run cannot start surfacing Chinese passages through channel
-      // ordering drift.
-      { name: "pinyin", source: bundledPinyin, auto: false },
+      // ordering drift. The factory closes over the live grade signal
+      // so the sub-picker's "G1..G6 / all" choice flows through to
+      // every subsequent `pick`.
+      {
+        name: "pinyin",
+        source: createBundledPinyin({ getGrade: () => pinyinGrade.grade() }),
+        auto: false,
+      },
     ],
     activeChannel: () => corpusChannel.channel(),
   });
@@ -191,6 +199,17 @@ export function App(props: AppProps = {}): JSX.Element {
     if (next === corpusChannel.channel()) return;
     corpusChannel.setChannel(next);
     if (is("practice")) {
+      session.start();
+      view.syncNow();
+    }
+  };
+
+  // Same UX as the channel picker: pin the new grade and restart so the
+  // very next passage is in the requested age band.
+  const handlePinyinGradeChange: typeof pinyinGrade.setGrade = (next) => {
+    if (next === pinyinGrade.grade()) return;
+    pinyinGrade.setGrade(next);
+    if (is("practice") && corpusChannel.channel() === "pinyin") {
       session.start();
       view.syncNow();
     }
@@ -328,6 +347,8 @@ export function App(props: AppProps = {}): JSX.Element {
               onKeySoundPackChange={keySounds.setPackName}
               corpusChannel={corpusChannel.channel()}
               onCorpusChannelChange={handleCorpusChannelChange}
+              pinyinGrade={pinyinGrade.grade()}
+              onPinyinGradeChange={handlePinyinGradeChange}
               pressedKeys={pressedKeys}
               bindHiddenInput={(el) => (hiddenInputRef = el)}
               onStageTap={() => hiddenInputRef?.focus()}

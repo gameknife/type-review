@@ -2,7 +2,7 @@ import type { Accessor, JSX } from "solid-js";
 import { createSignal, Show } from "solid-js";
 import type { CorpusEntry } from "../../engine/corpus";
 import type { SessionSnapshot } from "../../engine/session";
-import type { ChannelName } from "../../io";
+import type { ChannelName, PinyinGrade } from "../../io";
 import { CHANNELS, KEY_SOUND_PACKS } from "../../io";
 import { createKeyboardToggle } from "../hooks/use-keyboard-toggle";
 import { TypingArea } from "../TypingArea";
@@ -36,6 +36,19 @@ const SOURCE_OPTIONS: ReadonlyArray<{ value: ChannelName; label: string }> = CHA
   label: c.label,
 }));
 
+// Sub-picker shown only when the active channel is `pinyin`. Filters the
+// pool to a 小学年级 bucket (matches the grades tagged on each entry by
+// scripts/build-pinyin-corpus.ts). "all" keeps the unfiltered pool.
+const PINYIN_GRADE_OPTIONS: ReadonlyArray<{ value: PinyinGrade; label: string }> = [
+  { value: "all", label: "all" },
+  { value: 1, label: "G1" },
+  { value: 2, label: "G2" },
+  { value: 3, label: "G3" },
+  { value: 4, label: "G4" },
+  { value: 5, label: "G5" },
+  { value: 6, label: "G6" },
+];
+
 export interface PracticeStageProps {
   snap: SessionSnapshot;
   /**
@@ -56,6 +69,10 @@ export interface PracticeStageProps {
   corpusChannel: ChannelName;
   /** Live override from the inline picker. Persists to localStorage. */
   onCorpusChannelChange: (channel: ChannelName) => void;
+  /** Active 小学年级 bucket for the pinyin channel. "all" = unfiltered. */
+  pinyinGrade: PinyinGrade;
+  /** Live override from the pinyin sub-picker. Persists to localStorage. */
+  onPinyinGradeChange: (grade: PinyinGrade) => void;
   /** Currently-held keys, sourced from the shared `KeyEventBus`. */
   pressedKeys: Accessor<ReadonlySet<string>>;
   /** Receive the hidden input element so the parent can refocus on tap. */
@@ -174,6 +191,16 @@ export function PracticeStage(props: PracticeStageProps): JSX.Element {
             onChange={props.onKeySoundPackChange}
           />
         </div>
+        <Show when={props.corpusChannel === "pinyin"}>
+          <div class="practice-hints__row">
+            <InlineSegRadio
+              label="grade"
+              options={PINYIN_GRADE_OPTIONS}
+              value={props.pinyinGrade}
+              onChange={props.onPinyinGradeChange}
+            />
+          </div>
+        </Show>
 
         <div class="practice-hints__row">
           <p class="hint">

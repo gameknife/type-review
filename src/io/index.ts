@@ -1,4 +1,4 @@
-export { bundledCode, bundledPinyin, bundledQuotes } from "./corpus/bundled";
+export { bundledCode, bundledPinyin, bundledQuotes, createBundledPinyin } from "./corpus/bundled";
 export type { ChannelMeta } from "./corpus/channel-meta";
 export {
   CHANNEL_LABELS,
@@ -17,7 +17,7 @@ export type { ChannelName, CompositeCorpusOptions } from "./corpus/composite";
 export { createCompositeCorpus } from "./corpus/composite";
 export type { FileKind } from "./corpus/parse-text";
 export { inferFileKind, parseFile } from "./corpus/parse-text";
-export type { RawPinyin } from "./corpus/pinyin";
+export type { PinyinGrade, PinyinSourceOptions, RawPinyin } from "./corpus/pinyin";
 export { createPinyinSource } from "./corpus/pinyin";
 export type { RawQuote } from "./corpus/quotes";
 export { createQuotesSource } from "./corpus/quotes";

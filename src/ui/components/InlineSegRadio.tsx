@@ -1,12 +1,12 @@
 import type { JSX } from "solid-js";
 import { For, Show } from "solid-js";
 
-export interface InlineSegRadioOption<T extends string> {
+export interface InlineSegRadioOption<T extends string | number> {
   value: T;
   label: string;
 }
 
-export interface InlineSegRadioProps<T extends string> {
+export interface InlineSegRadioProps<T extends string | number> {
   /**
    * Group label shown inline before the options (e.g. `"sound"`) and used as
    * the radiogroup's accessible name.
@@ -29,7 +29,9 @@ export interface InlineSegRadioProps<T extends string> {
  * applies here too; Biome's `useSemanticElements` is suppressed on the
  * option buttons.
  */
-export function InlineSegRadio<T extends string>(props: InlineSegRadioProps<T>): JSX.Element {
+export function InlineSegRadio<T extends string | number>(
+  props: InlineSegRadioProps<T>,
+): JSX.Element {
   return (
     <div class="inline-seg" role="radiogroup" aria-label={props.label}>
       <span class="inline-seg__label">{props.label}:</span>
