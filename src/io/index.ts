@@ -24,6 +24,10 @@ export { createQuotesSource } from "./corpus/quotes";
 export { MAX_PASSAGE_CHARS, sanitize } from "./corpus/sanitize";
 export type { CorpusSessionAdapter, CorpusSessionAdapterOptions } from "./corpus/session-adapter";
 export { createCorpusSessionAdapter } from "./corpus/session-adapter";
+export type { TrainerSourceOptions } from "./corpus/trainer";
+export { createTrainerSource, TRAINER_DEFAULT_STAGE } from "./corpus/trainer";
+export type { TrainerStage } from "./corpus/trainer-stages";
+export { TRAINER_STAGES, trainerStageById } from "./corpus/trainer-stages";
 export type { UserCorpusStore, UserPassage } from "./corpus/user-corpus-store";
 export {
   createUserCorpusStore,

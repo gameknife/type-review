@@ -675,6 +675,31 @@ kbd {
   column-gap: var(--space-5);
   row-gap: var(--space-1);
 }
+
+/* Variant for sub-pickers with many options (e.g. the 17-stage trainer
+ * curriculum). On narrow viewports the wrap-style row turns into a
+ * 4-line tower that pushes the keyboard off-screen; switching to a
+ * single horizontal-scroll row keeps the picker compact and the kid
+ * can flick through stages. The inline-seg children get nowrap so the
+ * stage labels stay on one line. */
+.practice-hints__row--scroll {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  max-width: 100%;
+  /* Edge fade so a wide row doesn't look chopped on the trailing side */
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black var(--space-3),
+    black calc(100% - var(--space-3)),
+    transparent
+  );
+  padding: 0 var(--space-3);
+}
+.practice-hints__row--scroll .inline-seg {
+  flex-wrap: nowrap;
+  white-space: nowrap;
+}
 .hint-button {
   background: none;
   border: none;

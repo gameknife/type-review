@@ -33,6 +33,7 @@ const THEME_OPTIONS = [
   { value: "light" as Theme, label: "light" },
   { value: "sepia" as Theme, label: "sepia" },
   { value: "high-contrast" as Theme, label: "high contrast" },
+  { value: "kids" as Theme, label: "kids" },
 ];
 const KEYBOARD_LAYOUT_OPTIONS = [
   { value: "mac" as KeyboardLayoutName, label: "mac" },

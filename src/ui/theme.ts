@@ -1,10 +1,10 @@
 import type { Accessor } from "solid-js";
 import { createSignal } from "solid-js";
 
-export type Theme = "dark" | "light" | "sepia" | "high-contrast";
+export type Theme = "dark" | "light" | "sepia" | "high-contrast" | "kids";
 
 const STORAGE_KEY = "type-review:theme";
-const VALID_THEMES: readonly Theme[] = ["dark", "light", "sepia", "high-contrast"];
+const VALID_THEMES: readonly Theme[] = ["dark", "light", "sepia", "high-contrast", "kids"];
 
 /**
  * Reads the theme from localStorage. Strict membership check against the

@@ -3,7 +3,7 @@ import { createSignal, Show } from "solid-js";
 import type { CorpusEntry } from "../../engine/corpus";
 import type { SessionSnapshot } from "../../engine/session";
 import type { ChannelName, PinyinGrade } from "../../io";
-import { CHANNELS, KEY_SOUND_PACKS } from "../../io";
+import { CHANNELS, KEY_SOUND_PACKS, TRAINER_STAGES } from "../../io";
 import { createKeyboardToggle } from "../hooks/use-keyboard-toggle";
 import { TypingArea } from "../TypingArea";
 import { InlineSegRadio } from "./InlineSegRadio";
@@ -49,6 +49,14 @@ const PINYIN_GRADE_OPTIONS: ReadonlyArray<{ value: PinyinGrade; label: string }>
   { value: 6, label: "G6" },
 ];
 
+// Sub-picker shown only when the active channel is `trainer`. Each entry
+// corresponds to one curriculum stage defined in trainer-stages.ts; the
+// label is the stage's letter pair (e.g. `fj`, `dk`) which doubles as a
+// reminder of what the kid is drilling.
+const TRAINER_STAGE_OPTIONS: ReadonlyArray<{ value: number; label: string }> = TRAINER_STAGES.map(
+  (s) => ({ value: s.id, label: s.label }),
+);
+
 export interface PracticeStageProps {
   snap: SessionSnapshot;
   /**
@@ -73,6 +81,10 @@ export interface PracticeStageProps {
   pinyinGrade: PinyinGrade;
   /** Live override from the pinyin sub-picker. Persists to localStorage. */
   onPinyinGradeChange: (grade: PinyinGrade) => void;
+  /** Active stage id for the trainer (kids) channel. */
+  trainerStage: number;
+  /** Live override from the trainer sub-picker. Persists to localStorage. */
+  onTrainerStageChange: (stage: number) => void;
   /** Currently-held keys, sourced from the shared `KeyEventBus`. */
   pressedKeys: Accessor<ReadonlySet<string>>;
   /** Receive the hidden input element so the parent can refocus on tap. */
@@ -198,6 +210,16 @@ export function PracticeStage(props: PracticeStageProps): JSX.Element {
               options={PINYIN_GRADE_OPTIONS}
               value={props.pinyinGrade}
               onChange={props.onPinyinGradeChange}
+            />
+          </div>
+        </Show>
+        <Show when={props.corpusChannel === "trainer"}>
+          <div class="practice-hints__row practice-hints__row--scroll">
+            <InlineSegRadio
+              label="stage"
+              options={TRAINER_STAGE_OPTIONS}
+              value={props.trainerStage}
+              onChange={props.onTrainerStageChange}
             />
           </div>
         </Show>

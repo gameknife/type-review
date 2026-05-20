@@ -38,6 +38,19 @@ describe("createTheme", () => {
     expect(localStorage.getItem("type-review:theme")).toBe("light");
   });
 
+  it("accepts the 'kids' theme", () => {
+    const theme = createTheme();
+    theme.setTheme("kids");
+    expect(theme.theme()).toBe("kids");
+    expect(document.documentElement.dataset.theme).toBe("kids");
+    expect(localStorage.getItem("type-review:theme")).toBe("kids");
+  });
+
+  it("loads 'kids' when storage holds it", () => {
+    localStorage.setItem("type-review:theme", "kids");
+    expect(createTheme().theme()).toBe("kids");
+  });
+
   it("gracefully tolerates a localStorage write failure (private mode)", () => {
     const theme = createTheme();
     const debug = vi.spyOn(console, "debug").mockImplementation(() => {});

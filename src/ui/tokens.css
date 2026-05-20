@@ -387,6 +387,74 @@ input, textarea { font: inherit; }
   --heat-5: oklch(0.92 0.020 80);
 }
 
+/* ─────────────────────────────────────────────────────────────
+ * Tokens — kids theme
+ *
+ * Pastel, daylight-bright palette for the trainer/pinyin channels —
+ * inspired by timbornemann/Tippsy-Tries-Typing (MIT) but toned down to
+ * a soft "奥莉金子" cream/peach base so the page still reads like a
+ * grown-up typing app, not a flashing cartoon.
+ *
+ * Design notes:
+ *  - background is a warm cream (oklch ≈ 0.97L, soft yellow undertone)
+ *    instead of pure white — easier on small eyes and matches Tippsy
+ *    `bg-amber-50` feel.
+ *  - accent is a saturated violet (Tippsy's hero color) on light bg —
+ *    still passes WCAG AA against the surface for body text and links.
+ *  - heat ramp dialled into pinks/violets so the "slow key" indicator
+ *    feels like a cheerful highlight rather than an angry alert.
+ *  - shadows kept soft; chunky shadows fight the soft palette.
+ * ───────────────────────────────────────────────────────────── */
+[data-theme="kids"] {
+  --color-bg:        oklch(0.975 0.018 80);   /* warm cream */
+  --color-surface:   oklch(0.960 0.022 70);   /* peach paper */
+  --color-surface-2: oklch(0.925 0.028 70);
+  --color-surface-3: oklch(0.890 0.034 65);
+  --color-border:    oklch(0.840 0.030 60);
+  --color-border-strong: oklch(0.730 0.040 50);
+
+  --color-text:    oklch(0.30 0.040 290);     /* deep violet for body */
+  --color-muted:   oklch(0.48 0.040 290);
+  --color-dim:     oklch(0.62 0.040 290);
+  --color-faint:   oklch(0.78 0.030 290);
+
+  /* Vivid pastel violet — Tippsy's `violet-500` family.
+   * Slightly darkened so it carries enough contrast on cream bg. */
+  --color-accent:        oklch(0.58 0.20 295);
+  --color-accent-dim:    oklch(0.72 0.14 295);
+  --color-accent-faint:  oklch(0.58 0.20 295 / 0.14);
+  --color-accent-area:   oklch(0.58 0.20 295 / 0.10);
+  --color-accent-fg:     oklch(0.99 0.005 80);  /* near-white text on accent */
+
+  --color-bg-elev:       color-mix(in oklch, var(--color-bg) 90%, transparent);
+  --color-surface-elev:  color-mix(in oklch, var(--color-surface) 92%, transparent);
+
+  /* Soft semantic colours — coral instead of harsh red, mint instead of
+   * neon green, golden honey instead of school-bus amber. */
+  --color-error:       oklch(0.62 0.18 25);
+  --color-error-faint: oklch(0.62 0.18 25 / 0.14);
+  --color-ok:          oklch(0.70 0.15 155);
+  --color-ok-faint:    oklch(0.70 0.15 155 / 0.14);
+  --color-warn:        oklch(0.78 0.16 75);
+  --color-warn-faint:  oklch(0.78 0.16 75 / 0.16);
+
+  --heat-fg: oklch(0.98 0.01 80);
+
+  /* Heat ramp shifted into pink/violet so the slow-key highlight feels
+   * like a friendly callout, not a scolding red flag. */
+  --heat-1: oklch(0.68 0.20 350 / 0.55);
+  --heat-2: oklch(0.74 0.16 330 / 0.50);
+  --heat-3: oklch(0.82 0.10 310 / 0.40);
+  --heat-4: oklch(0.90 0.05 290 / 0.40);
+  --heat-5: oklch(0.95 0.020 80);
+
+  --shadow-sm:  0 1px 2px rgba(120, 60, 140, .06);
+  --shadow-md:  0 4px 16px rgba(120, 60, 140, .10), 0 1px 3px rgba(120, 60, 140, .06);
+  --shadow-lg:  0 20px 60px rgba(120, 60, 140, .14), 0 2px 8px rgba(120, 60, 140, .08);
+
+  --glow-accent: 0 0 14px oklch(0.58 0.20 295 / 0.32);
+}
+
 [data-theme="high-contrast"] {
   /* Maximum-contrast palette for AAA legibility. Backgrounds collapse to
    * pure black; text + accent are pure-white / saturated-yellow for both

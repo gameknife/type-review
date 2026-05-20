@@ -8,7 +8,7 @@
  * for each kind live in `io/corpus/`.
  */
 
-export type SourceKind = "drills" | "difficult" | "quote" | "code" | "user" | "pinyin";
+export type SourceKind = "drills" | "difficult" | "quote" | "code" | "user" | "pinyin" | "trainer";
 
 /**
  * Optional ruby-style display annotation for an entry. Used by the pinyin

@@ -13,6 +13,7 @@ import {
   createDrillsSource,
   createKeyEventBus,
   createProfileStore,
+  createTrainerSource,
   createUserSource,
   NoPersistStore,
   validateSettings,
@@ -40,6 +41,7 @@ import { createSessionBootstrap } from "./hooks/use-session-bootstrap";
 import { createSessionHandlers } from "./hooks/use-session-handlers";
 import { createShowWhitespace } from "./hooks/use-show-whitespace";
 import { createSnapshotView } from "./hooks/use-snapshot";
+import { createTrainerStage } from "./hooks/use-trainer-stage";
 import { createUserCorpus } from "./hooks/use-user-corpus";
 import { Library } from "./Library";
 import { logFailure } from "./log";
@@ -101,6 +103,7 @@ export function App(props: AppProps = {}): JSX.Element {
   const userCorpus = createUserCorpus();
   const corpusChannel = createCorpusChannel();
   const pinyinGrade = createPinyinGrade();
+  const trainerStage = createTrainerStage();
   const corpus = createCompositeCorpus({
     channels: [
       { name: "user", source: createUserSource(() => userCorpus.passages()) },
@@ -108,6 +111,18 @@ export function App(props: AppProps = {}): JSX.Element {
       { name: "code", source: bundledCode },
       { name: "difficult", source: createDifficultSource(Math.random) },
       { name: "drills", source: createDrillsSource(Math.random) },
+      // `trainer` is the beginner finger-pair curriculum (fj → dk → sl
+      // → al → …). Explicit-only — the adaptive `auto` pipeline already
+      // handles letter unlocking on its own, and a kid lesson surfacing
+      // in someone's English drill rotation would feel jarring.
+      {
+        name: "trainer",
+        source: createTrainerSource({
+          getStageId: () => trainerStage.stageId(),
+          rng: Math.random,
+        }),
+        auto: false,
+      },
       // `pinyin` is explicit-only (kid-mode Chinese sentences typed via
       // pinyin). Keep it out of `auto` entirely so an English default
       // run cannot start surfacing Chinese passages through channel
@@ -210,6 +225,15 @@ export function App(props: AppProps = {}): JSX.Element {
     if (next === pinyinGrade.grade()) return;
     pinyinGrade.setGrade(next);
     if (is("practice") && corpusChannel.channel() === "pinyin") {
+      session.start();
+      view.syncNow();
+    }
+  };
+
+  const handleTrainerStageChange: typeof trainerStage.setStageId = (next) => {
+    if (next === trainerStage.stageId()) return;
+    trainerStage.setStageId(next);
+    if (is("practice") && corpusChannel.channel() === "trainer") {
       session.start();
       view.syncNow();
     }
@@ -349,6 +373,8 @@ export function App(props: AppProps = {}): JSX.Element {
               onCorpusChannelChange={handleCorpusChannelChange}
               pinyinGrade={pinyinGrade.grade()}
               onPinyinGradeChange={handlePinyinGradeChange}
+              trainerStage={trainerStage.stageId()}
+              onTrainerStageChange={handleTrainerStageChange}
               pressedKeys={pressedKeys}
               bindHiddenInput={(el) => (hiddenInputRef = el)}
               onStageTap={() => hiddenInputRef?.focus()}

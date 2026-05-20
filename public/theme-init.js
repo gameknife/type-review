@@ -7,7 +7,13 @@
 // `script-src 'self'` can stay in place without adding a sha256 hash.
 try {
   var t = localStorage.getItem("type-review:theme");
-  if (t === "light" || t === "dark" || t === "high-contrast") {
+  if (
+    t === "light" ||
+    t === "dark" ||
+    t === "high-contrast" ||
+    t === "sepia" ||
+    t === "kids"
+  ) {
     document.documentElement.setAttribute("data-theme", t);
   } else if (window.matchMedia) {
     if (window.matchMedia("(prefers-contrast: more)").matches) {
