@@ -228,12 +228,15 @@ kbd {
   line-height: var(--lh-loose);
   letter-spacing: 0;
   color: var(--color-dim);
-  /* `pre-line` preserves the `\n` characters sanitize emits at
-   * paragraph boundaries (rendered as forced line breaks) while still
-   * collapsing inline whitespace runs the way the rest of the engine
-   * expects. Without this, paragraph breaks would render as a single
-   * space and the visual paragraph structure would disappear. */
-  white-space: pre-line;
+  /* `pre-wrap` preserves every whitespace character — both the `\n`
+   * sanitize emits at paragraph boundaries (rendered as forced line
+   * breaks) and any consecutive spaces in the source (e.g. 4-space
+   * Python indentation in the `code` channel). The earlier `pre-line`
+   * setting collapsed inline whitespace runs, so a passage with
+   * "    return x" rendered as " return x" — the typist had to guess
+   * how many spaces to press. `pre-wrap` still allows soft wraps at
+   * whitespace, so long lines flow the same way they did. */
+  white-space: pre-wrap;
   word-break: break-word;
   user-select: none;
   /* Reserve three lines so passages of varying length all occupy the
@@ -255,13 +258,13 @@ kbd {
 
 .char {
   /* No explicit `white-space` — each span contains exactly one
-   * character, so the parent `.typing-area`'s `white-space: pre-line`
-   * is enough: single spaces are preserved (no run to collapse),
-   * `\n` chars render as forced wraps, and crucially the absence of
-   * `white-space: pre` here lets WebKit / Safari insert soft-wrap
-   * opportunities BETWEEN sibling char spans. With `pre` here,
-   * Safari treated the whole inline chain as one unbreakable unit
-   * and the typing passage ran off the right edge of the viewport. */
+   * character, so the parent `.typing-area`'s `white-space: pre-wrap`
+   * is enough: every whitespace character is preserved (incl. runs of
+   * spaces), `\n` chars render as forced wraps, and `pre-wrap` still
+   * allows wrapping at whitespace boundaries. Setting `white-space: pre`
+   * on the `.char` directly broke this on WebKit / Safari — the engine
+   * treated the chain as one unbreakable line and ran off the right
+   * edge of the viewport. */
   transition: color var(--dur-instant) var(--ease-out);
   position: relative;
 }

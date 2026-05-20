@@ -2,7 +2,7 @@ import type { Accessor, JSX } from "solid-js";
 import { createSignal, Show } from "solid-js";
 import type { CorpusEntry } from "../../engine/corpus";
 import type { SessionSnapshot } from "../../engine/session";
-import type { ChannelName, PinyinGrade } from "../../io";
+import type { ChannelName, PinyinGrade, TrainerMode } from "../../io";
 import { CHANNELS, KEY_SOUND_PACKS, TRAINER_STAGES } from "../../io";
 import { createKeyboardToggle } from "../hooks/use-keyboard-toggle";
 import { TypingArea } from "../TypingArea";
@@ -57,6 +57,13 @@ const TRAINER_STAGE_OPTIONS: ReadonlyArray<{ value: number; label: string }> = T
   (s) => ({ value: s.id, label: s.label }),
 );
 
+// Second-row sub-picker — switches between drilling just the stage's
+// spotlight pair (`solo`) and the cumulative pool (`mixed`).
+const TRAINER_MODE_OPTIONS: ReadonlyArray<{ value: TrainerMode; label: string }> = [
+  { value: "mixed", label: "mixed" },
+  { value: "solo", label: "solo" },
+];
+
 export interface PracticeStageProps {
   snap: SessionSnapshot;
   /**
@@ -85,6 +92,10 @@ export interface PracticeStageProps {
   trainerStage: number;
   /** Live override from the trainer sub-picker. Persists to localStorage. */
   onTrainerStageChange: (stage: number) => void;
+  /** Active practice mode for the trainer channel ("mixed" | "solo"). */
+  trainerMode: TrainerMode;
+  /** Live override from the trainer mode toggle. Persists to localStorage. */
+  onTrainerModeChange: (mode: TrainerMode) => void;
   /** Currently-held keys, sourced from the shared `KeyEventBus`. */
   pressedKeys: Accessor<ReadonlySet<string>>;
   /** Receive the hidden input element so the parent can refocus on tap. */
@@ -220,6 +231,14 @@ export function PracticeStage(props: PracticeStageProps): JSX.Element {
               options={TRAINER_STAGE_OPTIONS}
               value={props.trainerStage}
               onChange={props.onTrainerStageChange}
+            />
+          </div>
+          <div class="practice-hints__row">
+            <InlineSegRadio
+              label="mode"
+              options={TRAINER_MODE_OPTIONS}
+              value={props.trainerMode}
+              onChange={props.onTrainerModeChange}
             />
           </div>
         </Show>

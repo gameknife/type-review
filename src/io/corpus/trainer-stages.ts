@@ -25,23 +25,42 @@ export interface TrainerStage {
   /** Newly-introduced keys for this stage — primarily for the focus letter. */
   readonly newChars: readonly string[];
   /**
-   * Cumulative pool of allowed characters, including spaces. Always includes
-   * whitespace so the generator can produce multi-word passages.
+   * Cumulative pool of allowed glyphs for this stage. Whitespace is NOT
+   * included — `generatePseudoWords` joins words with " " on its own,
+   * so dropping a literal space into `allowed` lets the generator pick
+   * it as a "letter" inside a word and produce runs of spaces ("fj  j").
    */
   readonly chars: readonly string[];
+  /**
+   * Pool used by the "solo" practice mode — narrows the drill down to
+   * just this stage's spotlight keys (the pair printed in `label`),
+   * ignoring everything the kid already learned. Lets a kid hammer
+   * `sl sl ll ss` in isolation before moving back to mixed practice.
+   *
+   * Defaults to `newChars` but stages 4 ("al") and 14 ("z") need an
+   * override because their `newChars` is a single key — drilling one
+   * letter alone is pedagogically thin, and the label already promises
+   * a pair to the user.
+   */
+  readonly soloChars: readonly string[];
 }
 
 const HOME = ["a", "s", "d", "f", "g", "h", "j", "k", "l"] as const;
 const TOP = ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"] as const;
 const BOT = ["z", "x", "c", "v", "b", "n", "m"] as const;
 
-const stage = (id: number, label: string, newChars: string[], chars: string[]): TrainerStage => ({
+const stage = (
+  id: number,
+  label: string,
+  newChars: string[],
+  chars: string[],
+  soloChars?: string[],
+): TrainerStage => ({
   id,
   label,
   newChars,
-  // Whitespace is implicit in every alphabet — without it `generatePseudoWords`
-  // would produce one long unbroken string of letters.
-  chars: [...chars, " "],
+  chars,
+  soloChars: soloChars ?? newChars,
 });
 
 /**
@@ -55,7 +74,9 @@ const homeRow: TrainerStage[] = [
   stage(3, "sl", ["s", "l"], ["f", "j", "d", "k", "s", "l"]),
   // Left pinky `a` joins the home row — paired with `l` (right ring,
   // already practised) so the new motor pattern stands out alone.
-  stage(4, "al", ["a"], ["f", "j", "d", "k", "s", "l", "a"]),
+  // Solo mode drills the `al` pair explicitly even though only `a` is
+  // technically new.
+  stage(4, "al", ["a"], ["f", "j", "d", "k", "s", "l", "a"], ["a", "l"]),
   stage(5, "gh", ["g", "h"], [...HOME]),
 ];
 

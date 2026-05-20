@@ -88,6 +88,107 @@ describe("createTrainerSource", () => {
     expect(entry?.id?.startsWith("trainer-")).toBe(true);
   });
 
+  it("solo mode restricts the pool to soloChars for letter-pair stages", () => {
+    // Stage 3 (sl): soloChars = newChars = [s, l]. Mixed pool would
+    // also include f j d k.
+    const source = createTrainerSource({
+      getStageId: () => 3,
+      getMode: () => "solo",
+      rng: seededRng(123),
+    });
+    for (let i = 0; i < 8; i++) {
+      const entry = source.pick(ctx(seededRng(123 + i), 120));
+      if (!entry) continue;
+      for (const ch of entry.text) {
+        if (ch === " ") continue;
+        expect(["s", "l"]).toContain(ch);
+      }
+    }
+  });
+
+  it("solo mode honours per-stage soloChars override (stage 4: al)", () => {
+    // Stage 4's newChars is [a] but soloChars is [a, l] — the user-facing
+    // label is "al" so solo mode must drill the pair, not the single key.
+    const source = createTrainerSource({
+      getStageId: () => 4,
+      getMode: () => "solo",
+      rng: seededRng(7),
+    });
+    let sawA = false;
+    let sawL = false;
+    for (let i = 0; i < 12; i++) {
+      const entry = source.pick(ctx(seededRng(7 + i), 120));
+      if (!entry) continue;
+      for (const ch of entry.text) {
+        if (ch === " ") continue;
+        expect(["a", "l"]).toContain(ch);
+        if (ch === "a") sawA = true;
+        if (ch === "l") sawL = true;
+      }
+    }
+    expect(sawA).toBe(true);
+    expect(sawL).toBe(true);
+  });
+
+  it("mixed mode keeps the cumulative pool", () => {
+    // Stage 5 (gh) mixed pool covers the full home row.
+    const source = createTrainerSource({
+      getStageId: () => 5,
+      getMode: () => "mixed",
+      rng: seededRng(9),
+    });
+    const seen = new Set<string>();
+    for (let i = 0; i < 12; i++) {
+      const entry = source.pick(ctx(seededRng(9 + i), 200));
+      if (!entry) continue;
+      for (const ch of entry.text) {
+        if (ch !== " ") seen.add(ch);
+      }
+    }
+    // Crisp signal that the pool is wider than just g/h.
+    expect(seen.size).toBeGreaterThan(4);
+  });
+
+  it("defaults to mixed when no mode accessor is supplied", () => {
+    const source = createTrainerSource({ getStageId: () => 3, rng: seededRng(42) });
+    const entry = source.pick(ctx(seededRng(42), 200));
+    expect(entry).not.toBeNull();
+    // id encodes mode as the single letter after the stage id.
+    expect(entry?.id?.startsWith("trainer-3-m-")).toBe(true);
+  });
+
+  it("solo and mixed runs on the same stage get distinct id prefixes", () => {
+    const solo = createTrainerSource({
+      getStageId: () => 3,
+      getMode: () => "solo",
+      rng: seededRng(5),
+    }).pick(ctx(seededRng(5)));
+    const mixed = createTrainerSource({
+      getStageId: () => 3,
+      getMode: () => "mixed",
+      rng: seededRng(5),
+    }).pick(ctx(seededRng(5)));
+    expect(solo?.id?.startsWith("trainer-3-s-")).toBe(true);
+    expect(mixed?.id?.startsWith("trainer-3-m-")).toBe(true);
+  });
+
+  it("never emits consecutive spaces", () => {
+    // Regression: an earlier version added " " to stage.chars, which let
+    // `generatePseudoWords` pick a space as a "letter" inside a word and
+    // produced runs of two or three spaces between words.
+    for (let stage = 1; stage <= 17; stage++) {
+      const source = createTrainerSource({ getStageId: () => stage, rng: seededRng(stage) });
+      for (let i = 0; i < 10; i++) {
+        const entry = source.pick(ctx(seededRng(stage * 31 + i), 200));
+        if (!entry) continue;
+        expect(entry.text).not.toMatch(/\s{2,}/);
+        // Also forbid leading / trailing whitespace — same root cause
+        // would manifest there if the generator's pool included " ".
+        expect(entry.text).toBe(entry.text.trim());
+      }
+    }
+  });
+
   it("exposes 17 stages covering home, top, bottom, punctuation, shift, and numbers", () => {
     expect(TRAINER_STAGES).toHaveLength(17);
     // Spot-check labels at key boundaries to catch off-by-one

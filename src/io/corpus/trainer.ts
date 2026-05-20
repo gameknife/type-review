@@ -11,6 +11,17 @@ import { TRAINER_STAGES, trainerStageById } from "./trainer-stages";
  */
 export const TRAINER_DEFAULT_STAGE = TRAINER_STAGES[0]?.id ?? 1;
 
+/**
+ * Practice mode for the trainer channel.
+ *  - `mixed`: draw from the stage's cumulative pool. Mixed-rhythm drill
+ *    that exercises the new keys alongside everything previously
+ *    learned. Default.
+ *  - `solo`:  draw from `stage.soloChars` only — the spotlight pair for
+ *    this stage (e.g. just `sl` for stage 3). Lets a kid hammer the new
+ *    motor pattern in isolation before going back to mixed.
+ */
+export type TrainerMode = "mixed" | "solo";
+
 export interface TrainerSourceOptions {
   /**
    * Live read of the active stage id. The source consults this on every
@@ -19,6 +30,11 @@ export interface TrainerSourceOptions {
    * `TRAINER_DEFAULT_STAGE` — useful for unit tests.
    */
   getStageId?: () => number;
+  /**
+   * Live read of the practice mode. Defaults to `"mixed"` so callers
+   * that haven't wired the toggle in yet behave exactly as before.
+   */
+  getMode?: () => TrainerMode;
   /** RNG override. Defaults to `Math.random` — production wires `Math.random` too. */
   rng?: () => number;
 }
@@ -37,25 +53,28 @@ export interface TrainerSourceOptions {
 export function createTrainerSource(opts: TrainerSourceOptions = {}): CorpusSource {
   const rng = opts.rng ?? Math.random;
   const getStageId = opts.getStageId ?? (() => TRAINER_DEFAULT_STAGE);
+  const getMode = opts.getMode ?? ((): TrainerMode => "mixed");
 
   return {
     pick(ctx) {
       const stage = trainerStageById(getStageId());
+      const mode = getMode();
+      const base = mode === "solo" ? stage.soloChars : stage.chars;
       // Intersect the stage's pool with any adaptive-mode `Filter` so a
       // user-driven letter restriction (rare; trainer is explicit-only)
       // doesn't let us emit characters they haven't unlocked elsewhere.
-      const allowed = ctx.filter
-        ? stage.chars.filter((c) => c === " " || ctx.filter?.has(c.toLowerCase()))
-        : [...stage.chars];
-      if (allowed.length <= 1) {
-        // Only whitespace — nothing meaningful to type. The composite's
-        // fallback chain handles this.
+      const allowed = ctx.filter ? base.filter((c) => ctx.filter?.has(c.toLowerCase())) : [...base];
+      if (allowed.length === 0) {
+        // Nothing left after the filter intersection — let the composite
+        // fall back to another channel.
         return null;
       }
-      const filter: Filter = {
-        allowed,
-        focus: pickFocus(stage, allowed),
-      };
+      // Solo mode already over-represents the spotlight keys by virtue
+      // of the narrowed pool, so the focus-bias would just bias toward
+      // a single key (boring). Pass null in solo mode to keep the
+      // generator distributing uniformly across the pair.
+      const focus = mode === "solo" ? null : pickFocus(stage, allowed);
+      const filter: Filter = { allowed, focus };
       // Beginner content runs short — Tippsy's first lessons are roughly
       // 25-30 keystrokes. `wantedChars / 5.5` is the legacy formula used
       // by the difficult / drills sources; ÷ 6 keeps trainer passages a
@@ -64,8 +83,9 @@ export function createTrainerSource(opts: TrainerSourceOptions = {}): CorpusSour
       const passage = generatePseudoWords(filter, { wordCount, rng });
       // Re-tag with the trainer- prefix so the channel classifier picks
       // it up. We deliberately drop the `pseudo:` prefix that the
-      // generator stamps on its passage id.
-      const id = `trainer-${stage.id}-${passage.text.slice(0, 24)}`.replace(/\s+/g, "_");
+      // generator stamps on its passage id. Mode goes in too so a
+      // mixed and a solo run on the same stage produce distinct ids.
+      const id = `trainer-${stage.id}-${mode[0]}-${passage.text.slice(0, 22)}`.replace(/\s+/g, "_");
       return makeEntry(id.slice(0, 64), "trainer", passage.text);
     },
   };

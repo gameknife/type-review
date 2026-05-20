@@ -41,6 +41,7 @@ import { createSessionBootstrap } from "./hooks/use-session-bootstrap";
 import { createSessionHandlers } from "./hooks/use-session-handlers";
 import { createShowWhitespace } from "./hooks/use-show-whitespace";
 import { createSnapshotView } from "./hooks/use-snapshot";
+import { createTrainerMode } from "./hooks/use-trainer-mode";
 import { createTrainerStage } from "./hooks/use-trainer-stage";
 import { createUserCorpus } from "./hooks/use-user-corpus";
 import { Library } from "./Library";
@@ -104,6 +105,7 @@ export function App(props: AppProps = {}): JSX.Element {
   const corpusChannel = createCorpusChannel();
   const pinyinGrade = createPinyinGrade();
   const trainerStage = createTrainerStage();
+  const trainerMode = createTrainerMode();
   const corpus = createCompositeCorpus({
     channels: [
       { name: "user", source: createUserSource(() => userCorpus.passages()) },
@@ -119,6 +121,7 @@ export function App(props: AppProps = {}): JSX.Element {
         name: "trainer",
         source: createTrainerSource({
           getStageId: () => trainerStage.stageId(),
+          getMode: () => trainerMode.mode(),
           rng: Math.random,
         }),
         auto: false,
@@ -233,6 +236,15 @@ export function App(props: AppProps = {}): JSX.Element {
   const handleTrainerStageChange: typeof trainerStage.setStageId = (next) => {
     if (next === trainerStage.stageId()) return;
     trainerStage.setStageId(next);
+    if (is("practice") && corpusChannel.channel() === "trainer") {
+      session.start();
+      view.syncNow();
+    }
+  };
+
+  const handleTrainerModeChange: typeof trainerMode.setMode = (next) => {
+    if (next === trainerMode.mode()) return;
+    trainerMode.setMode(next);
     if (is("practice") && corpusChannel.channel() === "trainer") {
       session.start();
       view.syncNow();
@@ -375,6 +387,8 @@ export function App(props: AppProps = {}): JSX.Element {
               onPinyinGradeChange={handlePinyinGradeChange}
               trainerStage={trainerStage.stageId()}
               onTrainerStageChange={handleTrainerStageChange}
+              trainerMode={trainerMode.mode()}
+              onTrainerModeChange={handleTrainerModeChange}
               pressedKeys={pressedKeys}
               bindHiddenInput={(el) => (hiddenInputRef = el)}
               onStageTap={() => hiddenInputRef?.focus()}
