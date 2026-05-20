@@ -1,0 +1,504 @@
+/* ─────────────────────────────────────────────────────────────
+ * Kids-mode stylesheet.
+ *
+ * Scoped entirely under `.kids-app` so loading this file in the
+ * regular app has zero visual effect. The kids tree builds its own
+ * page from scratch (topbar + typing card + chunky keyboard +
+ * picker bar) and only re-uses the engine-driven `TypingArea`
+ * component — every other glyph on the page is a local SVG.
+ *
+ * Token strategy: kids palette is a small named set (`--kid-*`)
+ * declared at the `.kids-app` root, so the existing kids-theme
+ * palette in tokens.css does NOT need to be active. The page reads
+ * cleanly even when `data-theme` is `kids` or anything else.
+ * ───────────────────────────────────────────────────────────── */
+
+.kids-app {
+  /* Pastel cream / pink / blue / yellow / green / purple / orange.
+   * Picked to match the screenshot brief: warm-cream backdrop, soft
+   * sky/grass accents, candy-bright caps for modifier zones. */
+  --kid-bg-top: #fff7e3;
+  --kid-bg-bot: #fde3b3;
+  --kid-grass: #d6eea4;
+  --kid-grass-hi: #f0f8c8;
+  --kid-tree: #6dbf6b;
+  --kid-tree-hi: #98d989;
+  --kid-trunk: #b07a4a;
+  --kid-cloud: #ffffff;
+  --kid-cloud-line: #fff9d8;
+  --kid-text: #5a4e7c;
+  --kid-text-muted: #9d92b3;
+  --kid-accent: #4ec5d1;
+  --kid-accent-strong: #2aa7b4;
+  --kid-card: #fffdf3;
+  --kid-card-border: #ffd790;
+  --kid-pink: #ffaecc;
+  --kid-pink-deep: #ff7eb1;
+  --kid-blue: #cfe7ff;
+  --kid-blue-deep: #79b8ff;
+  --kid-yellow: #ffe89a;
+  --kid-yellow-deep: #f3c947;
+  --kid-green: #c8efb4;
+  --kid-green-deep: #82c45f;
+  --kid-purple: #d8c8ff;
+  --kid-purple-deep: #a07cd4;
+  --kid-orange: #ffd2a3;
+  --kid-orange-deep: #f5a050;
+  --kid-red: #ffc1b8;
+  --kid-red-deep: #f17464;
+  --kid-key-bg: #ffffff;
+  --kid-key-border: #e7dcc7;
+  --kid-focus-ring: #4ec5d1;
+  --kid-shadow: 0 8px 18px rgba(170, 130, 70, 0.10), 0 1px 0 rgba(255, 255, 255, 0.7) inset;
+  --kid-shadow-soft: 0 4px 10px rgba(170, 130, 70, 0.08);
+
+  position: fixed;
+  inset: 0;
+  overflow: auto;
+  font-family: "Nunito", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  color: var(--kid-text);
+  background:
+    radial-gradient(140% 90% at 50% 0%, var(--kid-bg-top) 0%, var(--kid-bg-bot) 100%);
+  isolation: isolate;
+}
+
+.kids-app * { box-sizing: border-box; }
+
+.kids-loading {
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  font-family: "Nunito", "PingFang SC", sans-serif;
+  color: #5a4e7c;
+  background: #fff7e3;
+}
+
+/* ---- scenery ------------------------------------------------- */
+
+.kid-scenery {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.kid-svg { display: block; }
+.kid-svg--flip { transform: scaleX(-1); }
+
+.kid-scenery__cloud { position: absolute; }
+.kid-scenery__cloud--a {
+  top: 7%;
+  left: 6%;
+  width: 110px;
+}
+.kid-scenery__cloud--b {
+  top: 14%;
+  right: 8%;
+  width: 90px;
+}
+.kid-cloud { fill: var(--kid-cloud); }
+.kid-cloud__face { fill: #5a4e7c; stroke: #5a4e7c; }
+.kid-cloud__blush { fill: var(--kid-pink); stroke: none; }
+
+.kid-scenery__tree {
+  position: absolute;
+  left: 1.5%;
+  bottom: 4%;
+  width: 130px;
+}
+.kid-tree__trunk { fill: var(--kid-trunk); }
+.kid-tree__leaves { fill: var(--kid-tree); }
+.kid-tree__leaves--hi { fill: var(--kid-tree-hi); }
+.kid-tree__dot { fill: #ffe89a; }
+
+.kid-scenery__hill {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 38%;
+  max-width: 480px;
+  min-width: 280px;
+}
+.kid-hill { fill: var(--kid-grass); }
+.kid-hill--hi { fill: var(--kid-grass-hi); }
+.kid-flag__pole { stroke: #8a6a44; }
+.kid-flag__cloth { fill: var(--kid-red-deep); }
+.kid-flag__top { fill: #f3c947; }
+
+.kid-scenery__star {
+  position: absolute;
+  left: 36%;
+  bottom: 8%;
+  width: 64px;
+  animation: kid-bob 4s ease-in-out infinite;
+}
+.kid-star__body { fill: #ffd45a; stroke: #f3a821; }
+.kid-star__eye { fill: #5a4e7c; }
+.kid-star__mouth { stroke: #5a4e7c; }
+.kid-star__blush { fill: var(--kid-pink); }
+@keyframes kid-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.kid-scenery__flower {
+  position: absolute;
+  width: 30px;
+}
+.kid-scenery__flower--a { left: 12%; bottom: 3%; }
+.kid-scenery__flower--b { left: 22%; bottom: 6%; width: 22px; }
+.kid-scenery__flower--c { right: 28%; bottom: 4%; width: 26px; }
+.kid-flower__petals circle { fill: #fff8d8; }
+.kid-flower--pink .kid-flower__petals circle { fill: var(--kid-pink); }
+.kid-flower--yellow .kid-flower__petals circle { fill: var(--kid-yellow); }
+.kid-flower--blue .kid-flower__petals circle { fill: var(--kid-blue); }
+.kid-flower__center { fill: #fff;}
+.kid-flower--pink .kid-flower__center { fill: var(--kid-pink-deep); }
+.kid-flower--yellow .kid-flower__center { fill: var(--kid-yellow-deep); }
+.kid-flower--blue .kid-flower__center { fill: var(--kid-blue-deep); }
+
+/* ---- topbar -------------------------------------------------- */
+
+.kid-topbar {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 24px;
+}
+
+.kid-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px 6px 6px;
+  border-radius: 999px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  color: var(--kid-text);
+}
+.kid-brand:hover { background: rgba(255, 255, 255, 0.55); }
+.kid-brand__star {
+  width: 36px;
+  height: 36px;
+  fill: #ffd45a;
+  stroke: #f3a821;
+  filter: drop-shadow(0 2px 0 rgba(243, 168, 33, 0.25));
+}
+.kid-brand__title {
+  font-weight: 800;
+  font-size: 22px;
+  color: var(--kid-green-deep);
+  letter-spacing: 0.5px;
+}
+
+.kid-stats {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.kid-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: #fffdf5;
+  box-shadow: var(--kid-shadow-soft);
+  border: 2px solid transparent;
+  min-width: 140px;
+}
+.kid-stat__icon {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke-linejoin: round;
+}
+.kid-stat--progress { border-color: var(--kid-yellow); }
+.kid-stat--progress .kid-stat__icon { fill: var(--kid-yellow-deep); stroke: var(--kid-yellow-deep); }
+.kid-stat--time { border-color: var(--kid-blue); }
+.kid-stat--time .kid-stat__icon { fill: none; stroke: var(--kid-blue-deep); }
+.kid-stat--acc { border-color: var(--kid-pink); }
+.kid-stat--acc .kid-stat__icon { fill: var(--kid-pink-deep); stroke: var(--kid-pink-deep); }
+.kid-stat__label { font-weight: 700; color: var(--kid-text-muted); }
+.kid-stat__value { font-weight: 800; color: var(--kid-text); margin-left: auto; font-variant-numeric: tabular-nums; }
+
+/* ---- main stage --------------------------------------------- */
+
+.kids-stage {
+  position: relative;
+  z-index: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 8px 24px 32px;
+  display: grid;
+  gap: 22px;
+}
+
+.kids-card {
+  background: var(--kid-card);
+  border: 3px solid var(--kid-card-border);
+  border-radius: 28px;
+  padding: 22px 26px;
+  box-shadow: var(--kid-shadow);
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Override the regular TypingArea look inside the kids card. The
+ * engine-driven span structure is unchanged; only colours, font, and
+ * the caret/error cues are restyled to fit the cute aesthetic. */
+.kids-card .typing-area {
+  font-family: "JetBrains Mono", "Nunito", monospace;
+  color: var(--kid-text-muted);
+  font-weight: 700;
+  letter-spacing: 1px;
+  font-size: 32px;
+  line-height: 1.8;
+  min-height: unset;
+  max-width: 100%;
+  margin: 0;
+  text-align: left;
+  user-select: none;
+}
+.kids-card .char {
+  padding: 2px 4px;
+  border-radius: 8px;
+}
+.kids-card .char--correct {
+  color: var(--kid-green-deep);
+}
+.kids-card .char--incorrect {
+  color: var(--kid-red-deep);
+  background: #ffe7e3;
+}
+.kids-card .char--current {
+  color: var(--kid-text);
+  outline: 3px solid var(--kid-focus-ring);
+  outline-offset: -1px;
+  border-radius: 8px;
+  background: #e8f6fa;
+}
+.kids-card .char--current::after { display: none; }
+
+/* font-size escape hatches for the picker */
+.kids-app--font-sm .kids-card .typing-area { font-size: 24px; }
+.kids-app--font-md .kids-card .typing-area { font-size: 32px; }
+.kids-app--font-lg .kids-card .typing-area { font-size: 44px; line-height: 1.6; }
+
+/* ruby (pinyin) overlay tweak — give the hanzi some breathing room */
+.kids-card .typing-area--ruby { line-height: 2.2; }
+.kids-card .ruby-group__display { color: var(--kid-text); font-weight: 800; font-size: 0.88em; }
+.kids-card .ruby-group__pinyin { font-size: 0.7em; }
+
+/* ---- keyboard ------------------------------------------------ */
+
+.kid-kb {
+  --kid-unit: 56px;
+  display: grid;
+  gap: 8px;
+  padding: 18px;
+  background: #fff5da;
+  border: 3px solid #ffd790;
+  border-radius: 28px;
+  box-shadow: var(--kid-shadow);
+  justify-content: center;
+}
+.kid-kb__row {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+.kid-key {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(var(--kw) * var(--kid-unit));
+  height: var(--kid-unit);
+  background: var(--kid-key-bg);
+  border: 2px solid var(--kid-key-border);
+  border-radius: 12px;
+  box-shadow: 0 3px 0 var(--kid-key-border), 0 4px 8px rgba(170, 130, 70, 0.08);
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--kid-text);
+  transition: transform 60ms ease, box-shadow 60ms ease, background 80ms ease;
+  user-select: none;
+}
+.kid-key__label { line-height: 1; }
+.kid-key__shifted {
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  color: var(--kid-text-muted);
+  font-weight: 600;
+}
+.kid-key--align-start .kid-key__label { margin-right: auto; padding-left: 12px; }
+.kid-key--align-end .kid-key__label { margin-left: auto; padding-right: 12px; }
+
+.kid-key--mod { font-size: 14px; font-weight: 800; }
+.kid-key--space {
+  background: var(--kid-key-bg);
+}
+
+.kid-key--red    { background: var(--kid-red);    border-color: var(--kid-red-deep);    box-shadow: 0 3px 0 var(--kid-red-deep),    0 4px 8px rgba(241, 116, 100, 0.18); }
+.kid-key--orange { background: var(--kid-orange); border-color: var(--kid-orange-deep); box-shadow: 0 3px 0 var(--kid-orange-deep), 0 4px 8px rgba(245, 160, 80, 0.18); }
+.kid-key--yellow { background: var(--kid-yellow); border-color: var(--kid-yellow-deep); box-shadow: 0 3px 0 var(--kid-yellow-deep), 0 4px 8px rgba(243, 201, 71, 0.18); }
+.kid-key--green  { background: var(--kid-green);  border-color: var(--kid-green-deep);  box-shadow: 0 3px 0 var(--kid-green-deep),  0 4px 8px rgba(130, 196, 95, 0.18); }
+.kid-key--blue   { background: var(--kid-blue);   border-color: var(--kid-blue-deep);   box-shadow: 0 3px 0 var(--kid-blue-deep),   0 4px 8px rgba(121, 184, 255, 0.18); }
+.kid-key--purple { background: var(--kid-purple); border-color: var(--kid-purple-deep); box-shadow: 0 3px 0 var(--kid-purple-deep), 0 4px 8px rgba(160, 124, 212, 0.18); }
+
+.kid-key--pressed {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08), 0 1px 3px rgba(170, 130, 70, 0.16);
+}
+
+.kid-key--focus {
+  outline: 3px solid var(--kid-focus-ring);
+  outline-offset: 2px;
+  animation: kid-pulse 1.4s ease-in-out infinite;
+}
+@keyframes kid-pulse {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+.kid-key--dim {
+  opacity: 0.55;
+}
+
+/* ---- toolbar / pickers --------------------------------------- */
+
+.kids-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 22px;
+  background: #fffdf3;
+  border: 3px solid #ffe7ad;
+  border-radius: 999px;
+  box-shadow: var(--kid-shadow-soft);
+  justify-content: center;
+}
+
+.kid-tabs {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  background: #fff;
+  border-radius: 999px;
+  border: 2px solid var(--kid-card-border);
+}
+.kid-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  font: inherit;
+  font-weight: 700;
+  color: var(--kid-text-muted);
+  cursor: pointer;
+}
+.kid-tab--active {
+  background: var(--kid-accent);
+  color: #fff;
+  box-shadow: 0 3px 0 var(--kid-accent-strong);
+}
+.kid-tab__glyph {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.55);
+  font-size: 13px;
+  font-weight: 800;
+}
+.kid-tab--active .kid-tab__glyph { background: rgba(255, 255, 255, 0.35); }
+
+.kid-picker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  color: var(--kid-text-muted);
+}
+.kid-picker__select {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+.kid-picker__native {
+  appearance: none;
+  -webkit-appearance: none;
+  padding: 8px 36px 8px 14px;
+  border-radius: 999px;
+  border: 2px solid var(--kid-card-border);
+  background: #fff;
+  font: inherit;
+  font-weight: 700;
+  color: var(--kid-text);
+  cursor: pointer;
+  min-width: 90px;
+}
+.kid-picker__native:focus-visible {
+  outline: 3px solid var(--kid-focus-ring);
+  outline-offset: 2px;
+}
+.kid-picker__chevron {
+  position: absolute;
+  right: 10px;
+  width: 16px;
+  height: 16px;
+  stroke: var(--kid-text-muted);
+  pointer-events: none;
+}
+
+/* ---- mobile ------------------------------------------------- */
+
+@media (max-width: 760px) {
+  .kid-topbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding: 12px;
+  }
+  .kid-stats { gap: 6px; justify-content: space-between; }
+  .kid-stat { min-width: 0; flex: 1; padding: 6px 10px; font-size: 12px; }
+  .kid-stat__label { font-size: 11px; }
+  .kid-brand__title { font-size: 18px; }
+  .kids-stage { padding: 4px 8px 24px; gap: 12px; }
+  .kids-card { padding: 12px; border-radius: 20px; min-height: 120px; }
+  .kid-kb {
+    --kid-unit: 20px;
+    padding: 8px;
+    gap: 4px;
+    border-radius: 16px;
+    overflow-x: auto;
+  }
+  .kid-kb__row { gap: 4px; }
+  .kid-key { font-size: 12px; border-radius: 6px; border-width: 1px; box-shadow: 0 2px 0 var(--kid-key-border); }
+  .kid-key--mod { font-size: 9px; }
+  .kid-key__shifted { font-size: 8px; top: 2px; }
+  .kids-card .typing-area { font-size: 20px; line-height: 1.7; letter-spacing: 0; }
+  .kids-app--font-lg .kids-card .typing-area { font-size: 26px; }
+  .kid-scenery__cloud, .kid-scenery__tree, .kid-scenery__star, .kid-scenery__flower {
+    display: none;
+  }
+  .kid-scenery__hill { opacity: 0.45; }
+  .kids-toolbar { border-radius: 18px; padding: 8px 10px; gap: 8px; }
+  .kid-picker__native { padding: 6px 28px 6px 10px; min-width: 70px; font-size: 13px; }
+  .kid-tab { padding: 6px 12px; font-size: 13px; }
+}

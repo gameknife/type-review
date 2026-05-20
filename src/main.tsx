@@ -1,12 +1,14 @@
 import { render } from "solid-js/web";
-import { App } from "./ui/App";
 import { logFailure } from "./ui/log";
+import { Root } from "./ui/Root";
 // Load order matters: @font-face first so the browser starts the woff2
 // fetch as early as possible, then tokens (which name the font families),
-// then app-level styles.
+// then app-level styles, then kids-mode overlay last so its scoped rules
+// can win over component defaults inside `.kids-app`.
 import "./ui/fonts.css";
 import "./ui/tokens.css";
 import "./ui/styles.css";
+import "./ui/kids.css";
 
 // Catch-all for promises whose rejection escapes the local handlers (engine
 // throws, fetch failures, etc.). Without this, the rejection silently
@@ -25,7 +27,7 @@ if (root === null) {
   throw new Error("#root element not found");
 }
 
-render(() => <App />, root);
+render(() => <Root />, root);
 
 // Tear down any leftover service worker from prior PWA-era builds. A user
 // who visited an older deploy has /sw.js still registered; without this

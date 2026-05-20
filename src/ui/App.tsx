@@ -53,6 +53,7 @@ import { Settings } from "./Settings";
 import { ShareView } from "./Share";
 import { SiteStats } from "./SiteStats";
 import { StatsView } from "./Stats";
+import type { ThemeController } from "./theme";
 import { createTheme } from "./theme";
 import { UserGuide } from "./UserGuide";
 
@@ -61,6 +62,14 @@ const CROSS_TAB_CHANNEL = "type-review";
 export interface AppProps {
   /** Profile store override — defaults to IndexedDB-or-memory. Used by tests. */
   store?: ProfileStore;
+  /**
+   * Optional pre-built theme controller. When `Root` decides between the
+   * grown-up and kid trees it constructs one controller and passes it
+   * here, so both trees see the same signal. When `App` is rendered
+   * standalone (tests, storybook) the controller defaults to a freshly-
+   * created one — the test surface stays unchanged.
+   */
+  themeController?: ThemeController;
 }
 
 /**
@@ -78,7 +87,7 @@ export function App(props: AppProps = {}): JSX.Element {
   const storePromise: Promise<ProfileStore> = props.store
     ? Promise.resolve(props.store)
     : createProfileStore();
-  const theme = createTheme();
+  const theme = props.themeController ?? createTheme();
   const keyboardLayout = createKeyboardLayout();
   const keymap = createKeymap();
   const showWhitespace = createShowWhitespace();
