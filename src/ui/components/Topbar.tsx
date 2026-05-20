@@ -7,6 +7,8 @@ export interface TopbarProps {
   /** Show the live-metrics block only when the practice view is active. */
   showLive: boolean;
   onHomeClick: () => void;
+  /** Switch to kids-mode tree. */
+  onKidsMode: () => void;
 }
 
 /** Application top bar: brand button + (in practice view) live WPM / accuracy / mode. */
@@ -30,6 +32,16 @@ export function Topbar(props: TopbarProps): JSX.Element {
           <span class="live__mode">{props.snap.mode}</span>
         </div>
       </Show>
+      <button
+        type="button"
+        class="topbar__kids"
+        onClick={() => props.onKidsMode()}
+        aria-label="切换到儿童模式"
+        title="切换到儿童模式"
+      >
+        <KidsStarMark />
+        <span class="topbar__kids__label">kids</span>
+      </button>
     </header>
   );
 }
@@ -40,6 +52,27 @@ export function Topbar(props: TopbarProps): JSX.Element {
  * (the accent-coloured "TYPE" word), and sized via 1em so it scales with
  * the logo's font size across the responsive type scale.
  */
+/** Five-point star matching the KidsApp brand. */
+function KidsStarMark(): JSX.Element {
+  return (
+    <svg
+      class="topbar__kids__star"
+      viewBox="0 0 24 24"
+      width="1.1em"
+      height="1.1em"
+      aria-hidden="true"
+    >
+      <path
+        d="M12 3 L14.5 9.5 L21.5 10 L16.2 14.5 L18 21 L12 17.5 L6 21 L7.8 14.5 L2.5 10 L9.5 9.5 Z"
+        fill="currentColor"
+        stroke="currentColor"
+        stroke-width="1.4"
+        stroke-linejoin="round"
+      />
+    </svg>
+  );
+}
+
 function BrandMark(): JSX.Element {
   return (
     <svg

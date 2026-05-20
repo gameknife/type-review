@@ -223,8 +223,7 @@ export function KidsApp(props: KidsAppProps): JSX.Element {
           <KidsScenery />
           <KidsTopbar snap={snap()} onExit={() => exitKids(props.themeController)} />
           <Banners loadBanner={loadBanner} saveBanner={saveBanner} runCrashed={runCrashed} />
-          {/* biome-ignore lint/a11y/useKeyWithClickEvents: tap-to-focus only for the mobile soft-keyboard hidden input — desktop typing flows through the window keydown handler. */}
-          <main class="kids-stage" onClick={() => hiddenInputRef?.focus()}>
+          <main class="kids-stage">
             <input
               ref={(el) => (hiddenInputRef = el)}
               class="sr-only"
@@ -255,7 +254,9 @@ export function KidsApp(props: KidsAppProps): JSX.Element {
               }}
             />
 
-            <div class="kids-card">
+            {/* biome-ignore lint/a11y/useKeyWithClickEvents: tap-to-focus for the mobile soft-keyboard hidden input — desktop typing flows through the window keydown handler. Bound to the card (not the whole stage) so picker clicks below don't snatch focus and slam open <select> dropdowns shut. */}
+            {/* biome-ignore lint/a11y/noStaticElementInteractions: same — mobile tap target, no semantic interaction. */}
+            <div class="kids-card" onClick={() => hiddenInputRef?.focus()}>
               <TypingArea
                 typing={snap().typing}
                 showWhitespace={false}

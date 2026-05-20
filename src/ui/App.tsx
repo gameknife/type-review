@@ -374,6 +374,7 @@ export function App(props: AppProps = {}): JSX.Element {
             snap={snap()}
             showLive={is("practice")}
             onHomeClick={() => router.navigate("practice")}
+            onKidsMode={() => theme.setTheme("kids")}
           />
 
           <Banners
