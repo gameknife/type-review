@@ -437,10 +437,28 @@ kbd {
    * `pre-wrap` so explicit spaces survive and the browser still wraps
    * at the spaces between ruby groups. */
   white-space: pre-wrap;
-  /* Loosen the line gap a touch so the hanzi row above and the
-   * tone-mark overlay (which extends slightly above the letters'
-   * cap-height) have headroom on a wrapped line. */
-  line-height: calc(var(--lh-loose) * 1.2);
+  /* The contiguous hanzi sits in `.typing-area__hanzi` above; the
+   * per-cell ruby row only needs its own line-height. */
+  line-height: var(--lh-loose);
+}
+/* Contiguous hanzi header — one row of natural Chinese above the
+ * pinyin surface. Replaces the per-syllable hanzi display so the
+ * sentence reads "有弟皆" instead of "有  弟  皆" (the ruby columns
+ * are as wide as their widest pinyin, which would otherwise spread
+ * the characters apart). The engine still drives the column-aligned
+ * pinyin below; this row is presentation-only. */
+.typing-area__hanzi {
+  font-family: "PingFang SC", "Hiragino Sans GB", "Source Han Sans SC",
+    "Microsoft YaHei", "STHeiti", var(--font-sans, sans-serif);
+  font-weight: var(--fw-medium);
+  font-size: 1.2em;
+  line-height: 1.4;
+  letter-spacing: 0.04em;
+  color: var(--color-text);
+  margin-bottom: 0.4em;
+  text-align: left;
+  user-select: none;
+  pointer-events: none;
 }
 .ruby-group {
   display: inline-flex;
@@ -450,14 +468,12 @@ kbd {
   /* Keep a syllable from breaking mid-pinyin on narrow viewports. */
   white-space: nowrap;
 }
+/* Hidden by default — the contiguous `.typing-area__hanzi` above
+ * replaces it. Kept in the DOM so the existing `RubyGroup` shape and
+ * any tests/accessibility tooling that walk the structure remain
+ * stable. */
 .ruby-group__display {
-  font-family: var(--font-sans, var(--font-mono));
-  font-size: 0.85em;
-  line-height: 1;
-  color: var(--color-text);
-  margin-bottom: 0.1em;
-  user-select: none;
-  pointer-events: none;
+  display: none;
 }
 .ruby-group__pinyin {
   display: inline-flex;

@@ -291,30 +291,24 @@
 .kids-app--font-md .kids-card .typing-area { font-size: 32px; }
 .kids-app--font-lg .kids-card .typing-area { font-size: 44px; line-height: 1.6; }
 
-/* Pinyin mode: the per-syllable hanzi-above-pinyin layout spreads
- * Chinese characters out (each column is as wide as its widest pinyin),
- * so the hanzi row reads like "有  弟  皆" instead of "有弟皆". Hide
- * those per-cell hanzi and render the contiguous sentence in a single
- * `.kids-hanzi` header row above the pinyin typing surface — the column
- * pairing is preserved for the engine while the kid sees natural
- * Chinese spacing on top. */
-.kids-card { flex-direction: column; gap: 12px; }
-.kids-hanzi {
-  font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "STHeiti", sans-serif;
+/* Pinyin mode: TypingArea now renders a contiguous hanzi row above
+ * the pinyin (shared with the grown-up app). Restyle it with the kid
+ * font scale and palette; the per-cell `.ruby-group__display` is
+ * already display:none from styles.css. */
+.kids-card { flex-direction: column; gap: 4px; }
+.kids-card .typing-area__hanzi {
   font-weight: 800;
   font-size: 36px;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   color: var(--kid-text);
   text-align: center;
   line-height: 1.4;
-  user-select: none;
+  margin-bottom: 0.2em;
 }
-.kids-app--font-sm .kids-hanzi { font-size: 28px; }
-.kids-app--font-md .kids-hanzi { font-size: 36px; }
-.kids-app--font-lg .kids-hanzi { font-size: 48px; }
+.kids-app--font-sm .kids-card .typing-area__hanzi { font-size: 28px; }
+.kids-app--font-md .kids-card .typing-area__hanzi { font-size: 36px; }
+.kids-app--font-lg .kids-card .typing-area__hanzi { font-size: 48px; }
 .kids-card .typing-area--ruby { line-height: 1.9; }
-/* Hide the per-cell hanzi — kids see the contiguous .kids-hanzi above. */
-.kids-card .ruby-group__display { display: none; }
 .kids-card .ruby-group__pinyin { font-size: 0.82em; }
 
 /* ---- keyboard ------------------------------------------------ */
@@ -515,8 +509,8 @@
   .kid-key__shifted { font-size: 8px; top: 2px; }
   .kids-card .typing-area { font-size: 20px; line-height: 1.7; letter-spacing: 0; }
   .kids-app--font-lg .kids-card .typing-area { font-size: 26px; }
-  .kids-hanzi { font-size: 24px; }
-  .kids-app--font-lg .kids-hanzi { font-size: 32px; }
+  .kids-card .typing-area__hanzi { font-size: 24px; }
+  .kids-app--font-lg .kids-card .typing-area__hanzi { font-size: 32px; }
   .kid-scenery__cloud, .kid-scenery__tree, .kid-scenery__star, .kid-scenery__flower {
     display: none;
   }

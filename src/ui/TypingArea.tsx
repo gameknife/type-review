@@ -50,6 +50,18 @@ export function TypingArea(props: TypingAreaProps): JSX.Element {
     if (!display || display.length === 0) return [];
     return computeSegments(expected(), display);
   });
+  /**
+   * Joined hanzi sentence for the contiguous header row. Ruby columns
+   * are as wide as their widest pinyin (`shēng` ≫ 生), so the per-cell
+   * hanzi would otherwise read like "有  弟  皆" instead of natural
+   * Chinese spacing. Compute once per display change and render above
+   * the pinyin surface; the per-cell hanzi is hidden via CSS.
+   */
+  const hanziHeader = createMemo<string>(() => {
+    const display = props.display;
+    if (!display || display.length === 0) return "";
+    return display.map((g) => g.display).join("");
+  });
   return (
     <section
       class="typing-area"
@@ -59,6 +71,11 @@ export function TypingArea(props: TypingAreaProps): JSX.Element {
       }}
       aria-label="typing area"
     >
+      <Show when={hanziHeader().length > 0}>
+        <div class="typing-area__hanzi" aria-hidden="true">
+          {hanziHeader()}
+        </div>
+      </Show>
       <Show
         when={props.display && props.display.length > 0}
         fallback={<PlainChars chars={chars()} typing={props.typing} />}
