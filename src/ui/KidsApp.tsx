@@ -257,6 +257,17 @@ export function KidsApp(props: KidsAppProps): JSX.Element {
             {/* biome-ignore lint/a11y/useKeyWithClickEvents: tap-to-focus for the mobile soft-keyboard hidden input — desktop typing flows through the window keydown handler. Bound to the card (not the whole stage) so picker clicks below don't snatch focus and slam open <select> dropdowns shut. */}
             {/* biome-ignore lint/a11y/noStaticElementInteractions: same — mobile tap target, no semantic interaction. */}
             <div class="kids-card" onClick={() => hiddenInputRef?.focus()}>
+              <Show
+                when={
+                  channel() === "pinyin" &&
+                  currentEntry()?.display &&
+                  currentEntry()?.text === snap().typing.expected
+                }
+              >
+                <div class="kids-hanzi" aria-hidden="true">
+                  {(currentEntry()?.display ?? []).map((g) => g.display).join("")}
+                </div>
+              </Show>
               <TypingArea
                 typing={snap().typing}
                 showWhitespace={false}
