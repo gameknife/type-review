@@ -101,9 +101,9 @@ function setup(): KeySoundsControl {
 }
 
 describe("createKeySounds", () => {
-  it("defaults to 'typewriter' and volume 1.0 when nothing is stored", () => {
+  it("defaults to 'mechvibe' and volume 1.0 when nothing is stored", () => {
     const c = setup();
-    expect(c.packName()).toBe("typewriter");
+    expect(c.packName()).toBe("mechvibe");
     expect(c.volume()).toBe(1.0);
   });
 
@@ -116,7 +116,7 @@ describe("createKeySounds", () => {
   it("falls back to the default pack when the stored pack name is unknown", () => {
     storage.setItem("type-review:sound-pack", "doesnt-exist");
     const c = setup();
-    expect(c.packName()).toBe("typewriter");
+    expect(c.packName()).toBe("mechvibe");
   });
 
   it("reads a stored volume on construction", () => {
@@ -135,9 +135,9 @@ describe("createKeySounds", () => {
 
   it("setPackName updates the signal and persists", () => {
     const c = setup();
-    c.setPackName("typewriter");
-    expect(c.packName()).toBe("typewriter");
-    expect(storage.getItem("type-review:sound-pack")).toBe("typewriter");
+    c.setPackName("soft");
+    expect(c.packName()).toBe("soft");
+    expect(storage.getItem("type-review:sound-pack")).toBe("soft");
   });
 
   it("setVolume clamps to 0..1 and persists", () => {
@@ -169,7 +169,7 @@ describe("createKeySounds", () => {
       },
     });
     const c = setup();
-    expect(c.packName()).toBe("typewriter");
+    expect(c.packName()).toBe("mechvibe");
     expect(() => c.setPackName("mechvibe")).not.toThrow();
     expect(c.packName()).toBe("mechvibe");
   });

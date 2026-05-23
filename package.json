@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
+    "deploy": "pnpm build && pnpm dlx wrangler pages deploy dist --project-name=type-review --branch=main",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",

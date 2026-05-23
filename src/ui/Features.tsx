@@ -88,8 +88,7 @@ export function Features(props: FeaturesProps): JSX.Element {
             <b>Layouts</b> — Mac and Windows physical layouts.
           </li>
           <li>
-            <b>Sound packs</b> — off, mechvibe (synth), typewriter (real samples), soft. Generated
-            on-device with Web Audio.
+            <b>Sound packs</b> — off, mechvibe, soft. Generated on-device with Web Audio.
           </li>
           <li>
             <b>Mobile soft-keyboard support</b> — hidden input captures iOS/Android keystrokes.

@@ -131,12 +131,11 @@ export function panForCode(code: string): number {
  * / Meta) are silent because they don't represent typing. `null` is also
  * returned for unknown keys (e.g. dead "Unidentified") to be safe.
  *
- * Backspace shares the `esc` slice on purpose. A real mechanical typewriter
- * has no backspace, so there's no historically-correct sound to borrow; the
- * `esc` slice is the shortest/crispest in every pack, which reads as "small
- * corrective tick" rather than a full keystroke. Routes through the same
- * category in every pack (typewriter, mechvibe, soft) so the choice is
- * consistent regardless of which pack the user has selected.
+ * Backspace shares the `esc` category on purpose. The shortest/crispest
+ * envelope reads as a "small corrective tick" rather than a full keystroke.
+ * Routes through the same category in every remaining audible pack
+ * (`mechvibe`, `soft`) so the choice is consistent regardless of which pack
+ * the user has selected.
  *
  * Exported so the routing logic is unit-testable without an `AudioContext`.
  */

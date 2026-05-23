@@ -11,7 +11,7 @@ A typing-practice web app that **adapts to you** and **stays out of your way** �
 - **Real text to type** — a curated library of public-domain quotes and short passages, your own `.txt` / `.md` uploads, or paste a one-off paragraph via the *custom text* affordance.
 - **Per-key + per-finger stats** — a stats dashboard with per-source WPM trends, finger speed/error breakdown, daily-run streaks, and milestone tracking. Every run feeds the same model regardless of mode.
 - **An on-screen keyboard** (optional) — colour-coded by your per-key mastery, with live press-state. Mac and Windows layouts. QWERTY, Colemak, Dvorak keymaps.
-- **Mechanical-keyboard sounds** (optional) — synthesised mechvibe + soft packs, plus a real-sample typewriter pack. Synth packs generate on-device with Web Audio.
+- **Mechanical-keyboard sounds** (optional) — off, mechvibe, and soft. The audible packs are synthesised on-device with Web Audio.
 - **Sharable results** — `copy share link` on Results emits a `#/share/<payload>` URL; recipients see a read-only card of the run.
 - **Long-form in-app reading** — the *Why typing matters* essay (and any future essays under `public/articles/<slug>/article.md`) renders as part of the app.
 - **Four themes** — dark, light, sepia, high-contrast. sRGB fallbacks for pre-2023 browsers.
@@ -70,11 +70,10 @@ See [`ARCHITECTURE.md`](./ARCHITECTURE.md) for layer rules, the data flow, and t
 
 ### Deployment
 
-[type.review](https://type.review) is served by **Cloudflare Pages**. To redeploy after a build:
+[type.review](https://type.review) is served by **Cloudflare Pages**. To redeploy in one command:
 
 ```bash
-pnpm build
-pnpm dlx wrangler pages deploy dist --project-name=type-review --branch=main
+pnpm deploy
 ```
 
 (Auth via `CLOUDFLARE_EMAIL` + `CLOUDFLARE_API_KEY` env vars, or `CLOUDFLARE_API_TOKEN`.)

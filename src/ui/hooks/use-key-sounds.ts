@@ -6,7 +6,9 @@ import { attachKeySounds, findPack } from "../../io";
 const PACK_STORAGE_KEY = "type-review:sound-pack";
 const VOLUME_STORAGE_KEY = "type-review:sound-volume";
 
-const DEFAULT_PACK = "typewriter";
+// Keep first-run sound on a synth pack so the app stays zero-download for
+// audio until the user changes the setting.
+const DEFAULT_PACK = "mechvibe";
 const DEFAULT_VOLUME = 1.0;
 
 function readStoredPack(): string {

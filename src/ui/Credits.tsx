@@ -24,15 +24,8 @@ export function Credits(props: CreditsProps): JSX.Element {
         <h3>Audio</h3>
         <ul>
           <li>
-            <b>typewriter sound pack</b> — "Typewriter #1" from{" "}
-            <a href="https://bigsoundbank.com/detail-1065-typewriter.html" rel="noopener">
-              BigSoundBank
-            </a>
-            . Public domain (CC0); credited as a courtesy.
-          </li>
-          <li>
-            <b>mechvibe and soft packs</b> — generated on-device with the Web Audio API. No assets,
-            no downloads.
+            <b>mechvibe and soft packs</b> — generated on-device with the Web Audio API. No audio
+            assets, no downloads.
           </li>
         </ul>
 
